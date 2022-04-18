@@ -43,20 +43,20 @@ class L4State14(app_manager.RyuApp):
         # write your code here
         #
         tcph = pkt.get_protocols(tcp.tcp)
-        iph = pkt.get_protocols(ipv4.ipv4)[0]
-        if len(tcph) > 0:
+        if len(tcph) > 0 and eth.ethertype == ETH_TYPE_IP:
+            iph = pkt.get_protocols(ipv4.ipv4)[0]
             if in_port == 1:
                 acts = [psr.OFPActionOutput(2)]
                 self.ht.add((iph.src, iph.dst, in_port, 2))
                 match = psr.OFPMatch(in_port, eth.ethertype, iph.src, iph.dst, iph.proto, tcph.src_port, tcph.dst_port)
-                self.add_flow(dp, 1, match, msg.buffer_id)
+                self.add_flow(dp, 1, match, acts, msg.buffer_id)
             else:
                 if (iph.dst, iph.src, 1, in_port) in self.ht:
                     acts = [psr.OFPActionOutput(1)]
                 else:
                     acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]
                 match = psr.OFPMatch(in_port, eth.ethertype, iph.src, iph.dst, iph.proto, tcph.src_port, tcph.dst_port)
-                self.add_flow(dp, 1, match, msg.buffer_id)
+                self.add_flow(dp, 1, match, acts, msg.buffer_id)
         else:
             out_port = 1 if in_port == 2 else 2
             acts = [psr.OFPActionOutput(out_port)]
