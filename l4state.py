@@ -50,7 +50,7 @@ class L4State14(app_manager.RyuApp):
                 acts = [psr.OFPActionOutput(2)]
                 self.ht.add((iph.src, iph.dst, in_port, 2))
                 if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
-                    return
+                    print(tcph[0])
                 match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                     ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                     tcp_dst=tcph[0].dst_port)
