@@ -48,8 +48,8 @@ class L4State14(app_manager.RyuApp):
             iph = iph[0]
             if in_port == 1:
                 acts = [psr.OFPActionOutput(2)]
-                # if (iph.src, iph.dst, in_port, 2) not in self.ht:
                 self.ht.add((iph.src, iph.dst, in_port, 2))
+                print(tcph)
                 match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                     ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                     tcp_dst=tcph[0].dst_port)
