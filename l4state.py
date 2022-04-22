@@ -53,8 +53,9 @@ class L4State14(app_manager.RyuApp):
                 match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                     ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                     tcp_dst=tcph[0].dst_port)
-                self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                # if msg.buffer_id != ofp.OFP_NO_BUFFER:
+                # self.add_flow(dp, 1, match, acts, msg.buffer_id)
+                if msg.buffer_id == ofp.OFP_NO_BUFFER:
+                    self.add_flow(dp, 1, match, acts, msg.buffer_id)
                 #     return
             else:
                 if (iph.dst, iph.src, 1, in_port) in self.ht:
@@ -64,8 +65,9 @@ class L4State14(app_manager.RyuApp):
                 match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                         tcp_dst=tcph[0].dst_port)
-                self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                # if msg.buffer_id != ofp.OFP_NO_BUFFER:
+                # self.add_flow(dp, 1, match, acts, msg.buffer_id)
+                if msg.buffer_id == ofp.OFP_NO_BUFFER:
+                    self.add_flow(dp, 1, match, acts, msg.buffer_id)
                 #     return
         else:
             out_port = 1 if in_port == 2 else 2
