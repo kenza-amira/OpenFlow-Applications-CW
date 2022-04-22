@@ -43,9 +43,8 @@ class L4State14(app_manager.RyuApp):
         # write your code here
         #
         tcph = pkt.get_protocols(tcp.tcp)
-        iph = pkt.get_protocols(ipv4.ipv4)
-        if not (len(tcph) == 0 and len(iph) == 0):
-            iph = iph[0]
+        if len(tcph) > 0 and eth.ethertype == ETH_TYPE_IP:
+            iph = pkt.get_protocols(ipv4.ipv4)[0]
             if in_port == 1:
                 acts = [psr.OFPActionOutput(2)]
                 self.ht.add((iph.src, iph.dst, in_port, 2))
