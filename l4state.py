@@ -47,28 +47,23 @@ class L4State14(app_manager.RyuApp):
             iph = pkt.get_protocols(ipv4.ipv4)[0]
             if in_port == 1:
                 acts = [psr.OFPActionOutput(2)]
-                self.ht.add((iph.src, iph.dst, in_port, 2))
-                if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
-                    print(tcph[0])
-                match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
-                                    ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
-                                    tcp_dst=tcph[0].dst_port)
-                # self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                if msg.buffer_id == ofp.OFP_NO_BUFFER:
+                if (iph.src, iph.dst, in_port, 2) not in self.ht:
+                    self.ht.add((iph.src, iph.dst, in_port, 2))
+                # if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
+                #     print(tcph[0])
+                    match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
+                                        ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
+                                        tcp_dst=tcph[0].dst_port)
                     self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                #     return
             else:
                 if (iph.dst, iph.src, 1, in_port) in self.ht:
                     acts = [psr.OFPActionOutput(1)]
-                else:
-                    acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]
-                match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
+                    match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                         tcp_dst=tcph[0].dst_port)
-                # self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                if msg.buffer_id == ofp.OFP_NO_BUFFER:
                     self.add_flow(dp, 1, match, acts, msg.buffer_id)
-                #     return
+                else:
+                    acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]  
         else:
             out_port = 1 if in_port == 2 else 2
             acts = [psr.OFPActionOutput(out_port)]
