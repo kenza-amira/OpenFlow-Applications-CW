@@ -48,8 +48,6 @@ class L4State14(app_manager.RyuApp):
             if in_port == 1:
                 if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
                     acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]
-                    if msg.buffer_id != ofp.OFP_NO_BUFFER:
-                        return
                 else:
                     self.ht.add((iph.src, iph.dst, in_port, 2))
                     acts = [psr.OFPActionOutput(2)]
@@ -57,8 +55,6 @@ class L4State14(app_manager.RyuApp):
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                         tcp_dst=tcph[0].dst_port)
                     self.add_flow(dp, 1, match, acts)
-                    if msg.buffer_id != ofp.OFP_NO_BUFFER:
-                        return
             elif in_port == 2:
                 if (iph.dst, iph.src, 1, in_port) in self.ht:
                     acts = [psr.OFPActionOutput(1)]
