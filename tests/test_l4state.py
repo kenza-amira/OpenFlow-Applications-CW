@@ -84,7 +84,6 @@ def test_l4state2():
             1, bits=TCP_SYN)
 
     ctlr._packet_in_handler(ofp_event.EventOFPPacketIn(n1n2))
-    print(dp)
     m = dp.out.match
     f = (m['in_port'], m['ipv4_src'], m['ipv4_dst'], m['tcp_src'], m['tcp_dst'])
     o = dp.out.instructions[0].actions[0].port
