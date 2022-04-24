@@ -67,7 +67,7 @@ class L4Mirror14(app_manager.RyuApp):
                     return
                 
                 if  self.ht[item] == 10:
-                    del self.ht[item]
+                    self.ht.pop(item)
                     match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                         tcp_dst=tcph[0].dst_port)
