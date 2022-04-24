@@ -47,7 +47,8 @@ class L4State14(app_manager.RyuApp):
         if len(tcph) != 0 and len(iph)!=0:
             iph = iph[0]
             if in_port == 1:
-                if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
+                flags = tcph[0].has_flags(tcp.TCP_SYN) or tcph[0].has_flags(tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_FIN) or tcph[0].has_flags(tcp.TCP_PSH) or tcph[0].has_flags(tcp.TCP_ACK) or tcph[0].has_flags(tcp.TCP_URG) or tcph[0].has_flags(tcp.TCP_ECE) or tcph[0].has_flags(tcp.TCP_CWR)
+                if tcph[0].has_flags(tcp.TCP_FIN, tcp.TCP_SYN) or tcph[0].has_flags(tcp.TCP_RST, tcp.TCP_SYN) or not flags:
                     acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]
                 else:
                     self.ht.add((iph.src, iph.dst, in_port, 2))
