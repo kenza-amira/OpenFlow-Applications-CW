@@ -57,7 +57,7 @@ class L4Mirror14(app_manager.RyuApp):
                     return
             else:
                 item = (iph.dst, iph.src, tcph[0].src_port, tcph[0].dst_port)
-                if tcph[0].has_flags(tcp.SYN) and not tcph[0].has_flags(tcp.TCP_ACK):
+                if tcph[0].has_flags(tcp.TCP_SYN) and not tcph[0].has_flags(tcp.TCP_ACK):
                     self.ht[item] = 1
                     acts = [psr.OFPActionOutput(1), psr.OFPActionOutput(3)]
                 elif item in self.ht:
