@@ -56,7 +56,7 @@ class L4Mirror14(app_manager.RyuApp):
                 if msg.buffer_id != ofp.OFP_NO_BUFFER:
                     return
             else:
-                item = (iph.dst, iph.src, tcph[0].src_port, tcph[0].dst_port)
+                item = (iph.src, iph.dst, tcph[0].src_port, tcph[0].dst_port)
                 if tcph[0].has_flags(tcp.TCP_SYN) and not tcph[0].has_flags(tcp.TCP_ACK):
                     self.ht[item] = 1
                     acts = [psr.OFPActionOutput(1), psr.OFPActionOutput(3)]
