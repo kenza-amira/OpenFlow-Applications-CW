@@ -70,7 +70,7 @@ class L4Mirror14(app_manager.RyuApp):
                     self.ht.pop(item)
                     match = psr.OFPMatch(in_port=2, eth_type=eth.ethertype, 
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
-                                        tcp_dst=tcph[0].dst_port, ip_proto = iph[0].proto)
+                                        tcp_dst=tcph[0].dst_port, ip_proto = iph.proto)
                     self.add_flow(dp, 0, match, [psr.OFPActionOutput(1)], msg.buffer_id)
                     if msg.buffer_id != ofp.OFP_NO_BUFFER:
                         return
