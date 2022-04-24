@@ -39,9 +39,7 @@ class L4State14(app_manager.RyuApp):
         dp = msg.datapath
         ofp, psr, did = (dp.ofproto, dp.ofproto_parser, format(dp.id, '016d'))
         eth = pkt.get_protocols(ethernet.ethernet)[0]
-        #
-        # write your code here
-        #
+        ###################################################################################""
         tcph = pkt.get_protocols(tcp.tcp)
         iph = pkt.get_protocols(ipv4.ipv4)
         if len(tcph) != 0 and len(iph)!=0:
@@ -73,7 +71,7 @@ class L4State14(app_manager.RyuApp):
         else:
             out_port = 1 if in_port == 2 else 2
             acts = [psr.OFPActionOutput(out_port)]
-
+        ###################################################################################
         data = msg.data if msg.buffer_id == ofp.OFP_NO_BUFFER else None
         out = psr.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id,
                                in_port=in_port, actions=acts, data=data)

@@ -43,9 +43,40 @@ class L4Mirror14(app_manager.RyuApp):
         tcph = pkt.get_protocols(tcp.tcp)
 
         out_port = 2 if in_port == 1 else 1
-        #
-        # write your code here
-        #
+        tcph = pkt.get_protocols(tcp.tcp)
+        iph = pkt.get_protocols(ipv4.ipv4)
+        if len(tcph) != 0 and len(iph)!=0:
+            iph = iph[0]
+            if in_port == 1:
+                acts = [psr.OFPActionOutput(out_port)]
+                match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
+                                    ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
+                                    tcp_dst=tcph[0].dst_port)
+                self.add_flow(dp, 1, match, acts, msg.buffer_id)
+                if msg.buffer_id != ofp.OFP_NO_BUFFER:
+                    return
+            else:
+                item = (iph.dst, iph.src, tcph[0].src_port, tcph[0].dst_port)
+                if tcph[0].has_flags(tcp.SYN) and not tcph[0].has_flags(tcp.TCP_ACK):
+                    self.ht[item] = 1
+                    acts = [psr.OFPActionOutput(1), psr.OFPActionOutput(3)]
+                elif item in self.ht:
+                    self.ht[item] += 1
+                    acts = [psr.OFPActionOutput(1), psr.OFPActionOutput(3)]
+                else:
+                    return
+                
+                if  self.ht[item] == 10:
+                    del self.ht[item]
+                    match = psr.OFPMatch(in_port=in_port, eth_src=eth.src, eth_dst=eth.dst, 
+                                        ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
+                                        tcp_dst=tcph[0].dst_port)
+                    self.add_flow(dp, 0, match, [psr.OFPActionOutput(1)], msg.buffer_id)
+                    if msg.buffer_id != ofp.OFP_NO_BUFFER:
+                        return
+        else:
+            acts = [psr.OFPActionOutput(out_port)]
+
         data = msg.data if msg.buffer_id == ofp.OFP_NO_BUFFER else None
         out = psr.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id,
                                in_port=in_port, actions=acts, data=data)
