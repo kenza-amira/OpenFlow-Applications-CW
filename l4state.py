@@ -45,7 +45,7 @@ class L4State14(app_manager.RyuApp):
         tcph = pkt.get_protocols(tcp.tcp)
         iph = pkt.get_protocols(ipv4.ipv4)
         if len(tcph) != 0 and len(iph)!=0:
-            iph = [0]
+            iph = iph[0]
             if in_port == 1:
                 if tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_RST) or tcph[0].has_flags(tcp.TCP_SYN, tcp.TCP_FIN) or tcph[0].has_flags(0):
                     acts = [psr.OFPActionOutput(ofp.OFPPC_NO_FWD)]
