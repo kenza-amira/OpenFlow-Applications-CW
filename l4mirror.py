@@ -45,6 +45,7 @@ class L4Mirror14(app_manager.RyuApp):
         out_port = 2 if in_port == 1 else 1
         tcph = pkt.get_protocols(tcp.tcp)
         iph = pkt.get_protocols(ipv4.ipv4)
+        ###################################################################################
         if len(tcph) != 0 and len(iph)!=0:
             iph = iph[0]
             if in_port == 1:
@@ -67,7 +68,7 @@ class L4Mirror14(app_manager.RyuApp):
                     return
                 
                 if  self.ht[item] == 10:
-                    self.ht.pop(item)
+                    del self.ht[item]
                     match = psr.OFPMatch(in_port=2, eth_type=eth.ethertype, 
                                         ipv4_src=iph.src, ipv4_dst=iph.dst, tcp_src=tcph[0].src_port, 
                                         tcp_dst=tcph[0].dst_port, ip_proto = iph.proto)
@@ -76,7 +77,7 @@ class L4Mirror14(app_manager.RyuApp):
                         return
         else:
             acts = [psr.OFPActionOutput(out_port)]
-
+        ############################################################################################
         data = msg.data if msg.buffer_id == ofp.OFP_NO_BUFFER else None
         out = psr.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id,
                                in_port=in_port, actions=acts, data=data)
